@@ -22,6 +22,8 @@ with base as (
     from MY_PROJECT_DB.MY_SCHEMA.stg_games_data
     
     
+        where loaded_at > (select max(loaded_at) from MY_PROJECT_DB.MY_SCHEMA.dim_game)
+    
 
 )
 

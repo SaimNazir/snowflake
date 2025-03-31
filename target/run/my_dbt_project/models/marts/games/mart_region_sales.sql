@@ -1,41 +1,30 @@
-
+-- back compat for old kwarg name
   
+  begin;
+    
+        
+            
+	    
+	    
+            
+        
     
 
-        create or replace transient table MY_PROJECT_DB.MY_SCHEMA.mart_region_sales
-         as
-        (
-
-with base as (
-    select * 
-    from MY_PROJECT_DB.MY_SCHEMA.stg_games_data
-    
     
 
-),
+    merge into MY_PROJECT_DB.MY_SCHEMA.mart_region_sales as DBT_INTERNAL_DEST
+        using MY_PROJECT_DB.MY_SCHEMA.mart_region_sales__dbt_tmp as DBT_INTERNAL_SOURCE
+        on ((DBT_INTERNAL_SOURCE.concat(u.game_id, '-', r.region_id) = DBT_INTERNAL_DEST.concat(u.game_id, '-', r.region_id)))
 
-unpivoted as (
-    select game_id, 'NA' as region_code, na_sales as sales, loaded_at from base
-    union all
-    select game_id, 'EU', eu_sales, loaded_at from base
-    union all
-    select game_id, 'JP', jp_sales, loaded_at from base
-    union all
-    select game_id, 'Other', other_sales, loaded_at from base
-),
+    
+    when matched then update set
+        "GAME_ID" = DBT_INTERNAL_SOURCE."GAME_ID","REGION_ID" = DBT_INTERNAL_SOURCE."REGION_ID","SALES" = DBT_INTERNAL_SOURCE."SALES","LOADED_AT" = DBT_INTERNAL_SOURCE."LOADED_AT"
+    
 
-with_ids as (
-    select
-        u.game_id,
-        r.region_id,
-        u.sales,
-        u.loaded_at
-    from unpivoted u
-    left join MY_PROJECT_DB.MY_SCHEMA.dim_region r
-        on u.region_code = r.region_code
-)
+    when not matched then insert
+        ("GAME_ID", "REGION_ID", "SALES", "LOADED_AT")
+    values
+        ("GAME_ID", "REGION_ID", "SALES", "LOADED_AT")
 
-select * from with_ids
-        );
-      
-  
+;
+    commit;

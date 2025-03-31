@@ -5,6 +5,8 @@ with base as (
     from MY_PROJECT_DB.MY_SCHEMA.stg_games_data
     
     
+        where loaded_at > (select max(loaded_at) from MY_PROJECT_DB.MY_SCHEMA.mart_region_sales)
+    
 
 ),
 
@@ -29,4 +31,9 @@ with_ids as (
         on u.region_code = r.region_code
 )
 
-select * from with_ids
+select
+    game_id,
+    region_id,
+    sales,
+    loaded_at
+from with_ids

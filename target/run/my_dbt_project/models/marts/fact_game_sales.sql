@@ -1,38 +1,30 @@
-
+-- back compat for old kwarg name
   
+  begin;
+    
+        
+            
+	    
+	    
+            
+        
     
 
-        create or replace transient table MY_PROJECT_DB.MY_SCHEMA.fact_game_sales
-         as
-        (
-
-with base as (
-    select * 
-    from MY_PROJECT_DB.MY_SCHEMA.stg_games_data
-    
     
 
-)
+    merge into MY_PROJECT_DB.MY_SCHEMA.fact_game_sales as DBT_INTERNAL_DEST
+        using MY_PROJECT_DB.MY_SCHEMA.fact_game_sales__dbt_tmp as DBT_INTERNAL_SOURCE
+        on ((DBT_INTERNAL_SOURCE.game_id = DBT_INTERNAL_DEST.game_id))
 
-select
-    game_id,
     
-    md5(lower(trim(platform)))
- as platform_id,
+    when matched then update set
+        "GAME_ID" = DBT_INTERNAL_SOURCE."GAME_ID","PLATFORM_ID" = DBT_INTERNAL_SOURCE."PLATFORM_ID","GENRE_ID" = DBT_INTERNAL_SOURCE."GENRE_ID","NA_SALES" = DBT_INTERNAL_SOURCE."NA_SALES","EU_SALES" = DBT_INTERNAL_SOURCE."EU_SALES","JP_SALES" = DBT_INTERNAL_SOURCE."JP_SALES","OTHER_SALES" = DBT_INTERNAL_SOURCE."OTHER_SALES","GLOBAL_SALES" = DBT_INTERNAL_SOURCE."GLOBAL_SALES","CRITIC_SCORE" = DBT_INTERNAL_SOURCE."CRITIC_SCORE","USER_SCORE" = DBT_INTERNAL_SOURCE."USER_SCORE","REVIEW_COUNT" = DBT_INTERNAL_SOURCE."REVIEW_COUNT","LOADED_AT" = DBT_INTERNAL_SOURCE."LOADED_AT"
     
-    md5(lower(trim(genre)))
- as genre_id,
 
-    na_sales,
-    eu_sales,
-    jp_sales,
-    other_sales,
-    global_sales,
-    critic_score,
-    user_score,
-    review_count,
-    loaded_at
-from base
-        );
-      
-  
+    when not matched then insert
+        ("GAME_ID", "PLATFORM_ID", "GENRE_ID", "NA_SALES", "EU_SALES", "JP_SALES", "OTHER_SALES", "GLOBAL_SALES", "CRITIC_SCORE", "USER_SCORE", "REVIEW_COUNT", "LOADED_AT")
+    values
+        ("GAME_ID", "PLATFORM_ID", "GENRE_ID", "NA_SALES", "EU_SALES", "JP_SALES", "OTHER_SALES", "GLOBAL_SALES", "CRITIC_SCORE", "USER_SCORE", "REVIEW_COUNT", "LOADED_AT")
+
+;
+    commit;
