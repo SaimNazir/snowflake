@@ -117,7 +117,7 @@ models:
       - name: region_with_highest_sales
         description: "Region where the game sold the most units."
 
-  - name: mart_remastered_successes
+  - name: mart_remastered_success
     description: "Mart view of successful remastered games (high ROI and global sales > 5M). Useful for remake strategy analysis."
     columns:
       - name: game_id

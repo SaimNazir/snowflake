@@ -3,13 +3,12 @@
 with source as (
     select * from MY_PROJECT_DB.MY_SCHEMA.RAW_GAMES_DATA
     
-        where loaded_at > (select max(loaded_at) from MY_PROJECT_DB.MY_SCHEMA.stg_games_data)
-    
 ),
 
 renamed as (
     select
         rank,
+        game_id,
         name,
         platform,
         year::int as year,
@@ -20,21 +19,12 @@ renamed as (
         jp_sales,
         other_sales,
         global_sales,
-        game_id,
         age_rating,
         critic_score,
         user_score,
         review_count,
-        revenue,
-        cost_of_production,
-        profit,
-        roi,
-        region_with_highest_sales,
-        sales_category,
-        decade,
-        release_season,
-        years_since_release,
         developer,
+        release_season,
         cast(multiplayer_support as boolean) as multiplayer_support,
         cast(dlc_available as boolean) as dlc_available,
         cast(remastered_version as boolean) as remastered_version,

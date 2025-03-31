@@ -30,15 +30,12 @@ clean-targets:         # directories to be removed by `dbt clean`
 # directory as views. These settings can be overridden in the individual model
 # files using the `{{ config(...) }}` macro.
 models:
-  my_dbt_project:
-    # Config indicated by + and applies to all files under models/example/
+  # Config indicated by + and applies to all files under models/example/
+  +materialized: view
+  staging: #Raw data cleanup (materialized as views)
     +materialized: view
-    staging: #Raw data cleanup (materialized as views)
-      +materialized: view
-    intermediate: # Transformation logic (ephemeral — not stored in DB)
-      +materialized: ephemeral
-    marts: # Final reporting tables (materialized as tables)
-      +materialized: table
+  marts: # Final reporting tables (materialized as tables)
+    +materialized: table
 
 
 

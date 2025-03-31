@@ -1,20 +1,18 @@
 {{ config(
-    materialized='incremental',
+    materialized='table',
     unique_key='platform_id'
 ) }}
 
-
 with base as (
-    select distinct
+    select
         {{ generate_surrogate_key('platform') }} as platform_id,
-        platform,
-        loaded_at
+
+        platform
     from {{ ref('stg_games_data') }}
-    {{ incremental_filter('loaded_at') }}
-    )
+    group by platform
+)
 
 select
     platform_id,
-    platform,
-    loaded_at
+    platform
 from base

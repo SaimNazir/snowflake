@@ -3,20 +3,16 @@
     unique_key='game_id'
 ) }}
 
-
-
 with base as (
-    select distinct
+    select
         game_id,
         name,
         developer,
         publisher,
-        platform as platform_id,
-        genre as genre_id,
+        {{ generate_surrogate_key('platform') }} as platform_id,
+        {{ generate_surrogate_key('genre') }} as genre_id,
         year,
-        decade,
         release_season,
-        years_since_release,
         age_rating,
         multiplayer_support,
         dlc_available,

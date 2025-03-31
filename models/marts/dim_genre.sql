@@ -1,21 +1,17 @@
 {{ config(
-    materialized='incremental',
+    materialized='table',
     unique_key='genre_id'
 ) }}
 
-
-
 with base as (
-    select distinct
-        genre as genre_id,
-        genre,
-        loaded_at
+    select
+        {{ generate_surrogate_key('genre') }} as genre_id,
+        genre
     from {{ ref('stg_games_data') }}
-    {{ incremental_filter('loaded_at') }}
-    )
+    group by genre
+)
 
 select
     genre_id,
-    genre,
-    loaded_at
+    genre
 from base

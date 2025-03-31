@@ -53,6 +53,7 @@ def ensure_table_exists(cursor):
     cursor.execute(f"""
     CREATE TABLE IF NOT EXISTS {TARGET_TABLE} (
         Rank INTEGER,
+        Game_ID VARCHAR(50),
         Name VARCHAR(255),
         Platform VARCHAR(50),
         Year FLOAT,
@@ -63,27 +64,19 @@ def ensure_table_exists(cursor):
         JP_Sales FLOAT,
         Other_Sales FLOAT,
         Global_Sales FLOAT,
-        Game_ID VARCHAR(50),
         Age_Rating VARCHAR(20),
         Critic_Score FLOAT,
         User_Score FLOAT,
         Review_Count FLOAT,
-        Revenue FLOAT,
-        Cost_of_Production FLOAT,
-        Profit FLOAT,
-        ROI FLOAT,
-        Region_With_Highest_Sales VARCHAR(50),
-        Sales_Category VARCHAR(50),
-        Decade FLOAT,
-        Release_Season VARCHAR(20),
-        Years_Since_Release FLOAT,
         Developer VARCHAR(255),
+        Release_Season VARCHAR(20),
         Multiplayer_Support VARCHAR(5),
         DLC_Available VARCHAR(5),
         Remastered_Version VARCHAR(5),
         loaded_at TIMESTAMP
     )
     """)
+
     
     print(f"Target table '{TARGET_TABLE}' created/verified")
 

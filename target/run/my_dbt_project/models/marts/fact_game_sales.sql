@@ -1,30 +1,38 @@
--- back compat for old kwarg name
+
   
-  begin;
-    
-        
-            
-	    
-	    
-            
-        
     
 
+        create or replace transient table MY_PROJECT_DB.MY_SCHEMA.fact_game_sales
+         as
+        (
+
+with base as (
+    select * 
+    from MY_PROJECT_DB.MY_SCHEMA.stg_games_data
+    
     
 
-    merge into MY_PROJECT_DB.MY_SCHEMA.fact_game_sales as DBT_INTERNAL_DEST
-        using MY_PROJECT_DB.MY_SCHEMA.fact_game_sales__dbt_tmp as DBT_INTERNAL_SOURCE
-        on ((DBT_INTERNAL_SOURCE.game_id = DBT_INTERNAL_DEST.game_id))
+)
 
+select
+    game_id,
     
-    when matched then update set
-        "GAME_ID" = DBT_INTERNAL_SOURCE."GAME_ID","REGION_ID" = DBT_INTERNAL_SOURCE."REGION_ID","PLATFORM_ID" = DBT_INTERNAL_SOURCE."PLATFORM_ID","GENRE_ID" = DBT_INTERNAL_SOURCE."GENRE_ID","SALES_CATEGORY_ID" = DBT_INTERNAL_SOURCE."SALES_CATEGORY_ID","NA_SALES" = DBT_INTERNAL_SOURCE."NA_SALES","EU_SALES" = DBT_INTERNAL_SOURCE."EU_SALES","JP_SALES" = DBT_INTERNAL_SOURCE."JP_SALES","OTHER_SALES" = DBT_INTERNAL_SOURCE."OTHER_SALES","GLOBAL_SALES" = DBT_INTERNAL_SOURCE."GLOBAL_SALES","CRITIC_SCORE" = DBT_INTERNAL_SOURCE."CRITIC_SCORE","USER_SCORE" = DBT_INTERNAL_SOURCE."USER_SCORE","REVIEW_COUNT" = DBT_INTERNAL_SOURCE."REVIEW_COUNT","REVENUE" = DBT_INTERNAL_SOURCE."REVENUE","COST_OF_PRODUCTION" = DBT_INTERNAL_SOURCE."COST_OF_PRODUCTION","PROFIT" = DBT_INTERNAL_SOURCE."PROFIT","ROI" = DBT_INTERNAL_SOURCE."ROI","LOADED_AT" = DBT_INTERNAL_SOURCE."LOADED_AT"
+    md5(lower(trim(platform)))
+ as platform_id,
     
+    md5(lower(trim(genre)))
+ as genre_id,
 
-    when not matched then insert
-        ("GAME_ID", "REGION_ID", "PLATFORM_ID", "GENRE_ID", "SALES_CATEGORY_ID", "NA_SALES", "EU_SALES", "JP_SALES", "OTHER_SALES", "GLOBAL_SALES", "CRITIC_SCORE", "USER_SCORE", "REVIEW_COUNT", "REVENUE", "COST_OF_PRODUCTION", "PROFIT", "ROI", "LOADED_AT")
-    values
-        ("GAME_ID", "REGION_ID", "PLATFORM_ID", "GENRE_ID", "SALES_CATEGORY_ID", "NA_SALES", "EU_SALES", "JP_SALES", "OTHER_SALES", "GLOBAL_SALES", "CRITIC_SCORE", "USER_SCORE", "REVIEW_COUNT", "REVENUE", "COST_OF_PRODUCTION", "PROFIT", "ROI", "LOADED_AT")
-
-;
-    commit;
+    na_sales,
+    eu_sales,
+    jp_sales,
+    other_sales,
+    global_sales,
+    critic_score,
+    user_score,
+    review_count,
+    loaded_at
+from base
+        );
+      
+  

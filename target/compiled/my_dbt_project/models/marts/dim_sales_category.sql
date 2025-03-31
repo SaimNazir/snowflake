@@ -1,23 +1,15 @@
 
 
-
-
 with base as (
-    select distinct
-        sales_category as sales_category_id,
-        sales_category,
-        loaded_at
+    select
+        
+    md5(lower(trim(['sales_category'])))
+ as surrogate_key,
+        sales_category as sales_category_name
     from MY_PROJECT_DB.MY_SCHEMA.stg_games_data
-    
-    
-        where loaded_at > (select max(loaded_at) from MY_PROJECT_DB.MY_SCHEMA.dim_sales_category)
-    
-
-    )
-
+)
 
 select
-    sales_category_id,
-    sales_category,
-    loaded_at
+    surrogate_key,
+    sales_category_name
 from base
