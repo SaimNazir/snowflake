@@ -1,0 +1,139 @@
+version: 2
+
+models:
+  - name: stg_games_data
+    description: "Staging model that cleans and casts raw game data."
+    columns:
+      - name: game_id
+        description: "Unique identifier for each game."
+        tests:
+          - not_null
+          - unique
+      - name: year
+        description: "Year of release."
+        tests:
+          - not_null
+      - name: platform
+        description: "Platform the game was released on."
+        tests:
+          - not_null
+
+  - name: fact_game_sales
+    description: "Fact table capturing financial and review metrics of games."
+    columns:
+      - name: game_id
+        description: "Foreign key to dim_game."
+        tests:
+          - not_null
+      - name: global_sales
+        description: "Total global sales in millions."
+        tests:
+          - not_null
+
+  - name: dim_game
+    description: "Dimension table with detailed metadata about games."
+    columns:
+      - name: game_id
+        description: "Primary key for the game."
+        tests:
+          - not_null
+          - unique
+      - name: platform_id
+        description: "Foreign key to dim_platform."
+      - name: genre_id
+        description: "Foreign key to dim_genre."
+
+  - name: dim_platform
+    description: "Lookup table for game platforms."
+    columns:
+      - name: platform_id
+        description: "Unique platform identifier."
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_genre
+    description: "Lookup table for game genres."
+    columns:
+      - name: genre_id
+        description: "Unique genre identifier."
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_region
+    description: "Lookup table for dominant sales regions."
+    columns:
+      - name: region_id
+        description: "Region identifier (e.g., NA, EU, JP)."
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_sales_category
+    description: "Lookup table for sales performance classifications."
+    columns:
+      - name: sales_category_id
+        description: "Unique identifier for sales category."
+        tests:
+          - not_null
+          - unique
+
+  - name: mart_high_perf_games
+    description: "Mart view for high-performing games (global sales > 5 million). Includes joined dimension details."
+    columns:
+      - name: game_id
+        description: "Unique identifier for the game."
+        tests:
+          - not_null
+          - unique
+      - name: global_sales
+        description: "Total global sales in millions."
+      - name: platform
+        description: "Name of the platform the game was released on."
+      - name: genre
+        description: "Game genre."
+      - name: sales_category
+        description: "Sales performance classification."
+      - name: region_with_highest_sales
+        description: "Region where the game sold the most units."
+
+  - name: mart_low_perf_games
+    description: "Mart view for low-performing games (global sales ≤ 5 million). Includes joined dimension details."
+    columns:
+      - name: game_id
+        description: "Unique identifier for the game."
+        tests:
+          - not_null
+          - unique
+      - name: global_sales
+        description: "Total global sales in millions."
+      - name: platform
+        description: "Name of the platform the game was released on."
+      - name: genre
+        description: "Game genre."
+      - name: sales_category
+        description: "Sales performance classification."
+      - name: region_with_highest_sales
+        description: "Region where the game sold the most units."
+
+  - name: mart_remastered_successes
+    description: "Mart view of successful remastered games (high ROI and global sales > 5M). Useful for remake strategy analysis."
+    columns:
+      - name: game_id
+        description: "Unique identifier for the game."
+        tests:
+          - not_null
+          - unique
+      - name: global_sales
+        description: "Total global sales in millions."
+      - name: roi
+        description: "Return on investment (revenue divided by production cost)."
+      - name: remastered_version
+        description: "Boolean flag indicating if the game was remastered."
+      - name: platform
+        description: "Name of the platform."
+      - name: genre
+        description: "Game genre."
+      - name: region_with_highest_sales
+        description: "Region with the highest unit sales."

@@ -1,0 +1,6 @@
+.env
+snow_env/
+__pycache__/
+test.ipynb
+logs/
+generated_data/

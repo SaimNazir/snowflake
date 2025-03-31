@@ -1,0 +1,6 @@
+sources:
+  - name: raw
+    database: MY_PROJECT_DB
+    schema: MY_SCHEMA
+    tables:
+      - name: RAW_GAMES_DATA
