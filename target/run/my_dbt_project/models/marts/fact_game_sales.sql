@@ -1,30 +1,55 @@
--- back compat for old kwarg name
+
   
-  begin;
-    
-        
-            
-	    
-	    
-            
-        
     
 
+        create or replace transient table MY_PROJECT_DB.MY_SCHEMA.fact_game_sales
+         as
+        (
+
+with base as (
+    select * 
+    from MY_PROJECT_DB.MY_SCHEMA.stg_games_data
+    
     
 
-    merge into MY_PROJECT_DB.MY_SCHEMA.fact_game_sales as DBT_INTERNAL_DEST
-        using MY_PROJECT_DB.MY_SCHEMA.fact_game_sales__dbt_tmp as DBT_INTERNAL_SOURCE
-        on ((DBT_INTERNAL_SOURCE.game_id = DBT_INTERNAL_DEST.game_id))
+),
 
-    
-    when matched then update set
-        "GAME_ID" = DBT_INTERNAL_SOURCE."GAME_ID","PLATFORM_ID" = DBT_INTERNAL_SOURCE."PLATFORM_ID","GENRE_ID" = DBT_INTERNAL_SOURCE."GENRE_ID","NA_SALES" = DBT_INTERNAL_SOURCE."NA_SALES","EU_SALES" = DBT_INTERNAL_SOURCE."EU_SALES","JP_SALES" = DBT_INTERNAL_SOURCE."JP_SALES","OTHER_SALES" = DBT_INTERNAL_SOURCE."OTHER_SALES","GLOBAL_SALES" = DBT_INTERNAL_SOURCE."GLOBAL_SALES","CRITIC_SCORE" = DBT_INTERNAL_SOURCE."CRITIC_SCORE","USER_SCORE" = DBT_INTERNAL_SOURCE."USER_SCORE","REVIEW_COUNT" = DBT_INTERNAL_SOURCE."REVIEW_COUNT","LOADED_AT" = DBT_INTERNAL_SOURCE."LOADED_AT"
-    
+unpivoted as (
+    select game_id, platform, genre, 'NA' as region_code, na_sales as sales, 
+           critic_score, user_score, review_count, loaded_at
+    from base
+    union all
+    select game_id, platform, genre, 'EU', eu_sales, 
+           critic_score, user_score, review_count, loaded_at
+    from base
+    union all
+    select game_id, platform, genre, 'JP', jp_sales, 
+           critic_score, user_score, review_count, loaded_at
+    from base
+    union all
+    select game_id, platform, genre, 'Other', other_sales, 
+           critic_score, user_score, review_count, loaded_at
+    from base
+),
 
-    when not matched then insert
-        ("GAME_ID", "PLATFORM_ID", "GENRE_ID", "NA_SALES", "EU_SALES", "JP_SALES", "OTHER_SALES", "GLOBAL_SALES", "CRITIC_SCORE", "USER_SCORE", "REVIEW_COUNT", "LOADED_AT")
-    values
-        ("GAME_ID", "PLATFORM_ID", "GENRE_ID", "NA_SALES", "EU_SALES", "JP_SALES", "OTHER_SALES", "GLOBAL_SALES", "CRITIC_SCORE", "USER_SCORE", "REVIEW_COUNT", "LOADED_AT")
+joined as (
+    select
+        u.game_id,
+        dp.platform_id,
+        dg.genre_id,
+        dr.region_id,
+        u.sales,
+        u.critic_score,
+        u.user_score,
+        u.review_count,
+        u.loaded_at
+    from unpivoted u
+    left join MY_PROJECT_DB.MY_SCHEMA.dim_platform dp on u.platform = dp.platform
+    left join MY_PROJECT_DB.MY_SCHEMA.dim_genre dg on u.genre = dg.genre
+    left join MY_PROJECT_DB.MY_SCHEMA.dim_region dr on u.region_code = dr.region_code
+)
 
-;
-    commit;
+select * from joined
+        );
+      
+  

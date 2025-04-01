@@ -3,8 +3,6 @@
 with source as (
     select * from MY_PROJECT_DB.MY_SCHEMA.RAW_GAMES_DATA
     
-        where loaded_at > (select max(loaded_at) from MY_PROJECT_DB.MY_SCHEMA.stg_games_data)
-    
 ),
 
 renamed as (

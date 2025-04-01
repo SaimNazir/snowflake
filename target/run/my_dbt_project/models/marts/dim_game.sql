@@ -1,30 +1,28 @@
--- back compat for old kwarg name
+
   
-  begin;
-    
-        
-            
-	    
-	    
-            
-        
     
 
-    
+        create or replace transient table MY_PROJECT_DB.MY_SCHEMA.dim_game
+         as
+        (
 
-    merge into MY_PROJECT_DB.MY_SCHEMA.dim_game as DBT_INTERNAL_DEST
-        using MY_PROJECT_DB.MY_SCHEMA.dim_game__dbt_tmp as DBT_INTERNAL_SOURCE
-        on ((DBT_INTERNAL_SOURCE.game_id = DBT_INTERNAL_DEST.game_id))
+with base as (
+    select
+        game_id,
+        name,
+        developer,
+        publisher,
+        year,
+        release_season,
+        age_rating,
+        multiplayer_support,
+        dlc_available,
+        remastered_version
+    from MY_PROJECT_DB.MY_SCHEMA.stg_games_data
 
-    
-    when matched then update set
-        "GAME_ID" = DBT_INTERNAL_SOURCE."GAME_ID","NAME" = DBT_INTERNAL_SOURCE."NAME","DEVELOPER" = DBT_INTERNAL_SOURCE."DEVELOPER","PUBLISHER" = DBT_INTERNAL_SOURCE."PUBLISHER","PLATFORM_ID" = DBT_INTERNAL_SOURCE."PLATFORM_ID","GENRE_ID" = DBT_INTERNAL_SOURCE."GENRE_ID","YEAR" = DBT_INTERNAL_SOURCE."YEAR","RELEASE_SEASON" = DBT_INTERNAL_SOURCE."RELEASE_SEASON","AGE_RATING" = DBT_INTERNAL_SOURCE."AGE_RATING","MULTIPLAYER_SUPPORT" = DBT_INTERNAL_SOURCE."MULTIPLAYER_SUPPORT","DLC_AVAILABLE" = DBT_INTERNAL_SOURCE."DLC_AVAILABLE","REMASTERED_VERSION" = DBT_INTERNAL_SOURCE."REMASTERED_VERSION","LOADED_AT" = DBT_INTERNAL_SOURCE."LOADED_AT"
-    
+)
 
-    when not matched then insert
-        ("GAME_ID", "NAME", "DEVELOPER", "PUBLISHER", "PLATFORM_ID", "GENRE_ID", "YEAR", "RELEASE_SEASON", "AGE_RATING", "MULTIPLAYER_SUPPORT", "DLC_AVAILABLE", "REMASTERED_VERSION", "LOADED_AT")
-    values
-        ("GAME_ID", "NAME", "DEVELOPER", "PUBLISHER", "PLATFORM_ID", "GENRE_ID", "YEAR", "RELEASE_SEASON", "AGE_RATING", "MULTIPLAYER_SUPPORT", "DLC_AVAILABLE", "REMASTERED_VERSION", "LOADED_AT")
-
-;
-    commit;
+select * from base
+        );
+      
+  
