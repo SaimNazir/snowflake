@@ -5,42 +5,28 @@ with base as (
     from MY_PROJECT_DB.MY_SCHEMA.stg_games_data
     
     
+        where loaded_at > (select max(loaded_at) from MY_PROJECT_DB.MY_SCHEMA.fact_game_sales)
+    
 
-),
-
-unpivoted as (
-    select game_id, platform, genre, 'NA' as region_code, na_sales as sales, 
-           critic_score, user_score, review_count, loaded_at
-    from base
-    union all
-    select game_id, platform, genre, 'EU', eu_sales, 
-           critic_score, user_score, review_count, loaded_at
-    from base
-    union all
-    select game_id, platform, genre, 'JP', jp_sales, 
-           critic_score, user_score, review_count, loaded_at
-    from base
-    union all
-    select game_id, platform, genre, 'Other', other_sales, 
-           critic_score, user_score, review_count, loaded_at
-    from base
 ),
 
 joined as (
     select
-        u.game_id,
+        b.game_id,
         dp.platform_id,
         dg.genre_id,
-        dr.region_id,
-        u.sales,
-        u.critic_score,
-        u.user_score,
-        u.review_count,
-        u.loaded_at
-    from unpivoted u
-    left join MY_PROJECT_DB.MY_SCHEMA.dim_platform dp on u.platform = dp.platform
-    left join MY_PROJECT_DB.MY_SCHEMA.dim_genre dg on u.genre = dg.genre
-    left join MY_PROJECT_DB.MY_SCHEMA.dim_region dr on u.region_code = dr.region_code
+        b.global_sales,
+        b.na_sales,
+        b.eu_sales,
+        b.jp_sales,
+        b.other_sales,
+        b.critic_score,
+        b.user_score,
+        b.review_count,
+        b.loaded_at
+    from base b
+    left join MY_PROJECT_DB.MY_SCHEMA.dim_platform dp on b.platform = dp.platform
+    left join MY_PROJECT_DB.MY_SCHEMA.dim_genre dg on b.genre = dg.genre
 )
 
 select * from joined

@@ -1,4 +1,4 @@
-version: 2
+version: 3
 
 models:
   - name: stg_games_data
@@ -17,6 +17,42 @@ models:
         description: "Platform the game was released on."
         tests:
           - not_null
+      - name: name
+        description: "Name of the game."
+      - name: genre
+        description: "Genre of the game."
+      - name: publisher
+        description: "Game publisher."
+      - name: na_sales
+        description: "Sales in North America (millions)."
+      - name: eu_sales
+        description: "Sales in Europe (millions)."
+      - name: jp_sales
+        description: "Sales in Japan (millions)."
+      - name: other_sales
+        description: "Sales in other regions (millions)."
+      - name: global_sales
+        description: "Total global sales (millions)."
+      - name: age_rating
+        description: "Game age rating."
+      - name: critic_score
+        description: "Average critic score."
+      - name: user_score
+        description: "Average user score."
+      - name: review_count
+        description: "Number of user reviews."
+      - name: developer
+        description: "Developer of the game."
+      - name: release_season
+        description: "Season in which the game was released."
+      - name: multiplayer_support
+        description: "Boolean flag for multiplayer support."
+      - name: dlc_available
+        description: "Boolean flag for DLC availability."
+      - name: remastered_version
+        description: "Boolean flag indicating a remastered version."
+      - name: loaded_at
+        description: "Timestamp of when the data was loaded."
 
   - name: fact_game_sales
     description: "Fact table capturing financial and review metrics of games."
@@ -25,10 +61,20 @@ models:
         description: "Foreign key to dim_game."
         tests:
           - not_null
-      - name: global_sales
-        description: "Total global sales in millions."
-        tests:
-          - not_null
+      - name: platform_id
+        description: "Foreign key to dim_platform."
+      - name: genre_id
+        description: "Foreign key to dim_genre."
+      - name: sales
+        description: "Sales in a given region (millions)."
+      - name: critic_score
+        description: "Average critic score."
+      - name: user_score
+        description: "Average user score."
+      - name: review_count
+        description: "Number of user reviews."
+      - name: loaded_at
+        description: "Timestamp of when the data was loaded."
 
   - name: dim_game
     description: "Dimension table with detailed metadata about games."
@@ -38,10 +84,24 @@ models:
         tests:
           - not_null
           - unique
-      - name: platform_id
-        description: "Foreign key to dim_platform."
-      - name: genre_id
-        description: "Foreign key to dim_genre."
+      - name: name
+        description: "Game title."
+      - name: developer
+        description: "Game developer."
+      - name: publisher
+        description: "Game publisher."
+      - name: year
+        description: "Release year."
+      - name: release_season
+        description: "Season of release."
+      - name: age_rating
+        description: "Age rating."
+      - name: multiplayer_support
+        description: "Multiplayer support flag."
+      - name: dlc_available
+        description: "DLC availability flag."
+      - name: remastered_version
+        description: "Remastered version flag."
 
   - name: dim_platform
     description: "Lookup table for game platforms."
@@ -51,6 +111,8 @@ models:
         tests:
           - not_null
           - unique
+      - name: platform
+        description: "Name of the platform."
 
   - name: dim_genre
     description: "Lookup table for game genres."
@@ -60,72 +122,129 @@ models:
         tests:
           - not_null
           - unique
-
-  - name: dim_region
-    description: "Lookup table for dominant sales regions."
-    columns:
-      - name: region_id
-        description: "Region identifier (e.g., NA, EU, JP)."
-        tests:
-          - not_null
-          - unique
+      - name: genre
+        description: "Name of the genre."
 
 
   - name: mart_high_perf_games
-    description: "Mart view for high-performing games (global sales > 5 million). Includes joined dimension details."
+    description: "Mart view for high-performing games. Includes joined dimension details."
     columns:
       - name: game_id
         description: "Unique identifier for the game."
         tests:
           - not_null
           - unique
-      - name: global_sales
-        description: "Total global sales in millions."
+      - name: game_name
+        description: "Title of the game."
+      - name: developer
+        description: "Game developer."
+      - name: publisher
+        description: "Game publisher."
       - name: platform
-        description: "Name of the platform the game was released on."
+        description: "Platform name."
       - name: genre
-        description: "Game genre."
-      - name: sales_category
-        description: "Sales performance classification."
-      - name: region_with_highest_sales
-        description: "Region where the game sold the most units."
+        description: "Genre of the game."
+      - name: year
+        description: "Release year."
+      - name: release_season
+        description: "Release season."
+      - name: age_rating
+        description: "Age rating."
+      - name: multiplayer_support
+        description: "Multiplayer support flag."
+      - name: dlc_available
+        description: "DLC availability flag."
+      - name: remastered_version
+        description: "Remastered version flag."
+      - name: global_sales
+        description: "sales in millions."
+      - name: critic_score
+        description: "Critic score."
+      - name: user_score
+        description: "User score."
+      - name: review_count
+        description: "Number of user reviews."
+      - name: loaded_at
+        description: "Load timestamp."
 
   - name: mart_low_perf_games
-    description: "Mart view for low-performing games (global sales ≤ 5 million). Includes joined dimension details."
+    description: "Mart view for low-performing games. Includes joined dimension details."
     columns:
       - name: game_id
         description: "Unique identifier for the game."
         tests:
           - not_null
           - unique
-      - name: global_sales
-        description: "Total global sales in millions."
+      - name: game_name
+        description: "Title of the game."
+      - name: developer
+        description: "Game developer."
+      - name: publisher
+        description: "Game publisher."
       - name: platform
-        description: "Name of the platform the game was released on."
+        description: "Platform name."
       - name: genre
-        description: "Game genre."
-      - name: sales_category
-        description: "Sales performance classification."
-      - name: region_with_highest_sales
-        description: "Region where the game sold the most units."
+        description: "Genre of the game."
+      - name: year
+        description: "Release year."
+      - name: release_season
+        description: "Release season."
+      - name: age_rating
+        description: "Age rating."
+      - name: multiplayer_support
+        description: "Multiplayer support flag."
+      - name: dlc_available
+        description: "DLC availability flag."
+      - name: remastered_version
+        description: "Remastered version flag."
+      - name: global_sales
+        description: "Sales in millions."
+      - name: critic_score
+        description: "Critic score."
+      - name: user_score
+        description: "User score."
+      - name: review_count
+        description: "Number of user reviews."
+      - name: loaded_at
+        description: "Load timestamp."
 
   - name: mart_remastered_success
-    description: "Mart view of successful remastered games (high ROI and global sales > 5M). Useful for remake strategy analysis."
+    description: "Mart view of successful remastered games. Useful for remake strategy analysis."
     columns:
       - name: game_id
         description: "Unique identifier for the game."
         tests:
           - not_null
           - unique
-      - name: global_sales
-        description: "Total global sales in millions."
-      - name: roi
-        description: "Return on investment (revenue divided by production cost)."
-      - name: remastered_version
-        description: "Boolean flag indicating if the game was remastered."
+      - name: game_name
+        description: "Title of the game."
+      - name: developer
+        description: "Game developer."
+      - name: publisher
+        description: "Game publisher."
       - name: platform
-        description: "Name of the platform."
+        description: "Platform name."
       - name: genre
-        description: "Game genre."
-      - name: region_with_highest_sales
-        description: "Region with the highest unit sales."
+        description: "Genre of the game."
+      - name: year
+        description: "Release year."
+      - name: release_season
+        description: "Release season."
+      - name: age_rating
+        description: "Age rating."
+      - name: multiplayer_support
+        description: "Multiplayer support flag."
+      - name: dlc_available
+        description: "DLC availability flag."
+      - name: remastered_version
+        description: "Remastered version flag."
+      - name: global_sales
+        description: "Sales in millions."
+      - name: critic_score
+        description: "Critic score."
+      - name: user_score
+        description: "User score."
+      - name: review_count
+        description: "Number of user reviews."
+      - name: loaded_at
+        description: "Load timestamp."

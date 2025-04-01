@@ -9,12 +9,13 @@
 with fact as (
     select *
     from MY_PROJECT_DB.MY_SCHEMA.fact_game_sales
-    where region_id = (select region_id from MY_PROJECT_DB.MY_SCHEMA.dim_region where region_code = 'NA')
-      and sales > 5
+    where global_sales > 5
 ),
 
 dim_game as (
-    select * from MY_PROJECT_DB.MY_SCHEMA.dim_game
+    select *
+    from MY_PROJECT_DB.MY_SCHEMA.dim_game
+    where remastered_version = true
 ),
 
 dim_platform as (
@@ -41,7 +42,8 @@ select
     g.dlc_available,
     g.remastered_version,
 
-    f.sales as na_sales,
+    f.global_sales,
+
     f.critic_score,
     f.user_score,
     f.review_count,
@@ -49,7 +51,7 @@ select
     f.loaded_at
 
 from fact f
-left join dim_game g on f.game_id = g.game_id
+inner join dim_game g on f.game_id = g.game_id
 left join dim_platform pl on f.platform_id = pl.platform_id
 left join dim_genre ge on f.genre_id = ge.genre_id
         );

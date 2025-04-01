@@ -9,8 +9,7 @@
 with fact as (
     select *
     from MY_PROJECT_DB.MY_SCHEMA.fact_game_sales
-    where region_id = (select region_id from MY_PROJECT_DB.MY_SCHEMA.dim_region where region_code = 'NA')
-      and sales <= 5
+    where global_sales <= 5
 ),
 
 dim_game as (
@@ -41,7 +40,7 @@ select
     g.dlc_available,
     g.remastered_version,
 
-    f.sales as na_sales,
+    f.global_sales,
     f.critic_score,
     f.user_score,
     f.review_count,

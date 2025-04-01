@@ -1,44 +1,30 @@
-
+-- back compat for old kwarg name
   
+  begin;
+    
+        
+            
+	    
+	    
+            
+        
     
 
-        create or replace transient table MY_PROJECT_DB.MY_SCHEMA.stg_games_data
-         as
-        (
-
-with source as (
-    select * from MY_PROJECT_DB.MY_SCHEMA.RAW_GAMES_DATA
     
-),
 
-renamed as (
-    select
-        rank,
-        game_id,
-        name,
-        platform,
-        year::int as year,
-        genre,
-        publisher,
-        na_sales,
-        eu_sales,
-        jp_sales,
-        other_sales,
-        global_sales,
-        age_rating,
-        critic_score,
-        user_score,
-        review_count,
-        developer,
-        release_season,
-        cast(multiplayer_support as boolean) as multiplayer_support,
-        cast(dlc_available as boolean) as dlc_available,
-        cast(remastered_version as boolean) as remastered_version,
-        loaded_at
-    from source
-)
+    merge into MY_PROJECT_DB.MY_SCHEMA.stg_games_data as DBT_INTERNAL_DEST
+        using MY_PROJECT_DB.MY_SCHEMA.stg_games_data__dbt_tmp as DBT_INTERNAL_SOURCE
+        on ((DBT_INTERNAL_SOURCE.game_id = DBT_INTERNAL_DEST.game_id))
 
-select * from renamed
-        );
-      
-  
+    
+    when matched then update set
+        "RANK" = DBT_INTERNAL_SOURCE."RANK","GAME_ID" = DBT_INTERNAL_SOURCE."GAME_ID","NAME" = DBT_INTERNAL_SOURCE."NAME","PLATFORM" = DBT_INTERNAL_SOURCE."PLATFORM","YEAR" = DBT_INTERNAL_SOURCE."YEAR","GENRE" = DBT_INTERNAL_SOURCE."GENRE","PUBLISHER" = DBT_INTERNAL_SOURCE."PUBLISHER","NA_SALES" = DBT_INTERNAL_SOURCE."NA_SALES","EU_SALES" = DBT_INTERNAL_SOURCE."EU_SALES","JP_SALES" = DBT_INTERNAL_SOURCE."JP_SALES","OTHER_SALES" = DBT_INTERNAL_SOURCE."OTHER_SALES","GLOBAL_SALES" = DBT_INTERNAL_SOURCE."GLOBAL_SALES","AGE_RATING" = DBT_INTERNAL_SOURCE."AGE_RATING","CRITIC_SCORE" = DBT_INTERNAL_SOURCE."CRITIC_SCORE","USER_SCORE" = DBT_INTERNAL_SOURCE."USER_SCORE","REVIEW_COUNT" = DBT_INTERNAL_SOURCE."REVIEW_COUNT","DEVELOPER" = DBT_INTERNAL_SOURCE."DEVELOPER","RELEASE_SEASON" = DBT_INTERNAL_SOURCE."RELEASE_SEASON","MULTIPLAYER_SUPPORT" = DBT_INTERNAL_SOURCE."MULTIPLAYER_SUPPORT","DLC_AVAILABLE" = DBT_INTERNAL_SOURCE."DLC_AVAILABLE","REMASTERED_VERSION" = DBT_INTERNAL_SOURCE."REMASTERED_VERSION","LOADED_AT" = DBT_INTERNAL_SOURCE."LOADED_AT"
+    
+
+    when not matched then insert
+        ("RANK", "GAME_ID", "NAME", "PLATFORM", "YEAR", "GENRE", "PUBLISHER", "NA_SALES", "EU_SALES", "JP_SALES", "OTHER_SALES", "GLOBAL_SALES", "AGE_RATING", "CRITIC_SCORE", "USER_SCORE", "REVIEW_COUNT", "DEVELOPER", "RELEASE_SEASON", "MULTIPLAYER_SUPPORT", "DLC_AVAILABLE", "REMASTERED_VERSION", "LOADED_AT")
+    values
+        ("RANK", "GAME_ID", "NAME", "PLATFORM", "YEAR", "GENRE", "PUBLISHER", "NA_SALES", "EU_SALES", "JP_SALES", "OTHER_SALES", "GLOBAL_SALES", "AGE_RATING", "CRITIC_SCORE", "USER_SCORE", "REVIEW_COUNT", "DEVELOPER", "RELEASE_SEASON", "MULTIPLAYER_SUPPORT", "DLC_AVAILABLE", "REMASTERED_VERSION", "LOADED_AT")
+
+;
+    commit;

@@ -5,8 +5,7 @@
 with fact as (
     select *
     from {{ ref('fact_game_sales') }}
-    where region_id = (select region_id from {{ ref('dim_region') }} where region_code = 'NA')
-      and sales > 5
+    where global_sales > 5
 ),
 
 dim_game as (
@@ -39,7 +38,7 @@ select
     g.dlc_available,
     g.remastered_version,
 
-    f.sales as na_sales,
+    f.global_sales,
 
     f.critic_score,
     f.user_score,
