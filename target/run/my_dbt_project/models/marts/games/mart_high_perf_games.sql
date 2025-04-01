@@ -1,10 +1,8 @@
 
+  create or replace   view MY_PROJECT_DB.MY_SCHEMA.mart_high_perf_games
   
+   as (
     
-
-        create or replace transient table MY_PROJECT_DB.MY_SCHEMA.mart_high_perf_games
-         as
-        (
 
 with fact as (
     select *
@@ -54,6 +52,5 @@ from fact f
 inner join dim_game g on f.game_id = g.game_id
 left join dim_platform pl on f.platform_id = pl.platform_id
 left join dim_genre ge on f.genre_id = ge.genre_id
-        );
-      
-  
+  );
+
